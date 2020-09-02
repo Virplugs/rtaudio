@@ -461,6 +461,24 @@ long RtApi :: getStreamLatency( void )
   return totalLatency;
 }
 
+long RtApi ::getStreamInputLatency(void) {
+	verifyStream();
+
+	if (stream_.mode == INPUT || stream_.mode == DUPLEX)
+		return stream_.latency[1];
+	else
+		return 0;
+}
+
+long RtApi ::getStreamOutputLatency(void) {
+	verifyStream();
+
+	if (stream_.mode == OUTPUT || stream_.mode == DUPLEX)
+		return stream_.latency[0];
+	else
+		return 0;
+}
+
 double RtApi :: getStreamTime( void )
 {
   verifyStream();

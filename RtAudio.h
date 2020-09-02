@@ -596,14 +596,17 @@ class RTAUDIO_DLL_PUBLIC RtAudio
     RtAudioError (type = INVALID_USE) will be thrown.  If the API does not
     report latency, the return value will be zero.
   */
-  long getStreamLatency( void );
+  long getStreamLatency(void);
 
- //! Returns actual sample rate in use by the stream.
- /*!
-   On some systems, the sample rate used may be slightly different
-   than that specified in the stream parameters.  If a stream is not
-   open, an RtAudioError (type = INVALID_USE) will be thrown.
- */
+  long getStreamInputLatency(void);
+  long getStreamOutputLatency(void);
+
+  //! Returns actual sample rate in use by the stream.
+  /*!
+	On some systems, the sample rate used may be slightly different
+	than that specified in the stream parameters.  If a stream is not
+	open, an RtAudioError (type = INVALID_USE) will be thrown.
+  */
   unsigned int getStreamSampleRate( void );
 
   //! Specify whether warning messages should be printed to stderr.
@@ -707,7 +710,11 @@ class S24 {
 #pragma pack(pop)
 
 #if defined( HAVE_GETTIMEOFDAY )
-  #include <sys/time.h>
+  #if defined(_WIN32)
+    int gettimeofday(struct timeval *tp, struct timezone *tzp);
+  #else
+    #include <sys/time.h>
+  #endif
 #endif
 
 #include <sstream>
@@ -733,7 +740,9 @@ public:
   virtual void startStream( void ) = 0;
   virtual void stopStream( void ) = 0;
   virtual void abortStream( void ) = 0;
-  long getStreamLatency( void );
+  long getStreamLatency(void);
+  long getStreamInputLatency(void);
+  long getStreamOutputLatency(void);
   unsigned int getStreamSampleRate( void );
   virtual double getStreamTime( void );
   virtual void setStreamTime( double time );
@@ -879,6 +888,8 @@ inline void RtAudio :: abortStream( void ) { return rtapi_->abortStream(); }
 inline bool RtAudio :: isStreamOpen( void ) const { return rtapi_->isStreamOpen(); }
 inline bool RtAudio :: isStreamRunning( void ) const { return rtapi_->isStreamRunning(); }
 inline long RtAudio :: getStreamLatency( void ) { return rtapi_->getStreamLatency(); }
+inline long RtAudio :: getStreamInputLatency( void ) { return rtapi_->getStreamInputLatency(); }
+inline long RtAudio :: getStreamOutputLatency( void ) { return rtapi_->getStreamOutputLatency(); }
 inline unsigned int RtAudio :: getStreamSampleRate( void ) { return rtapi_->getStreamSampleRate(); }
 inline double RtAudio :: getStreamTime( void ) { return rtapi_->getStreamTime(); }
 inline void RtAudio :: setStreamTime( double time ) { return rtapi_->setStreamTime( time ); }
